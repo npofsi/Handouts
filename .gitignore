@@ -1,0 +1,15 @@
+*.xml
+*.log
+*.md5
+*.dpth
+*.aux
+*.auxlock
+*.out
+*.pdf
+AutomaticControlTheory/AutomaticControlTheory.bbl
+AutomaticControlTheory/AutomaticControlTheory.bcf
+AutomaticControlTheory/AutomaticControlTheory.blg
+AutomaticControlTheory/AutomaticControlTheory.fdb_latexmk
+AutomaticControlTheory/AutomaticControlTheory.fls
+AutomaticControlTheory/AutomaticControlTheory.synctex.gz
+AutomaticControlTheory/AutomaticControlTheory.xdv
