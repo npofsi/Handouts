@@ -5,6 +5,7 @@
 %\setlength\PreviewBorder{\gpbboxborder}
 \usepackage{tikz}
 \usepackage{pgfplots}
+\usepackage{hyperref}
 \usepackage{enumitem}
 \pgfplotsset{width=10cm,compat=1.9}
 \usepgfplotslibrary{patchplots}
@@ -806,7 +807,7 @@
 	            \end{center}
 	      }
 
-	\item{ 他们的 Bode 图如下，与惯性环节相似，关于x轴对称
+	\item{ 他们的 Bode 图如下，与惯性环节相似，其幅频特性曲线关于x轴对称
 
 
 	            \begin{center}
@@ -942,6 +943,251 @@
 	            \end{center}
 	      }
 \end{itemize}
+
+\subsection{一阶不稳定环节}
+
+该环节具有如下传递函数
+
+\begin{equation}
+	G(s)=\frac{1}{Ts-1}
+\end{equation}
+
+\begin{itemize}
+	\item{ 其 Nyquist 图像是一个半圆
+	            \begin{equation}
+		            G(j\omega)=\frac{1}{j\omega T-1}=\frac{1}{\sqrt{T^2\omega^2+1}}e^{j(-\arctan{\frac{T\omega}{-1}})}=\frac{-1}{1+T^2\omega^2}+j\frac{-T\omega}{1+T^2\omega^2}
+	            \end{equation}
+
+	            \begin{center}
+		            \begin{tikzpicture}
+			            \begin{axis}[width=5cm,height=5cm,
+					            axis lines = center,
+					            xlabel = \(1\), ylabel = \(i\),
+					            xmin = -1.5, xmax = 0.5,
+					            ymin = -1, ymax = 1,
+					            xticklabel=\empty, yticklabel=\empty,
+				            ]
+				            \addplot [
+				            domain = -1:0,
+				            color = red,
+				            samples = 200,
+				            -{>[scale = 2.0]},
+				            ] { -sqrt(0.25-((-x)-0.5)^2) };
+				            \node [above] at (axis cs: -0.5, 0) {$-\frac{1}{2}$};
+				            \node [above] at (axis cs: -1, 0) {$\omega=0$};
+				            \addplot+ [color=red] coordinates {
+						            (-0.5,-0.5)
+					            };
+				            \node [below] at (axis cs: -0.5, -0.5) {$\omega=\frac{1}{T}$};
+				            \node [above] at (axis cs: 0, 0) {$\omega=\infty$};
+			            \end{axis}
+		            \end{tikzpicture}
+	            \end{center}
+	      }
+
+	\item{ 其 Bode 图求解得，具有低通滤波特性，且输出相位滞后于输入信号相位
+
+	            \begin{equation}
+		            L(\omega)=20\log{\frac{1}{\sqrt{1+T^2\omega^2}}}=-20\log{\sqrt{1+T^2\omega^2}}
+	            \end{equation}
+	            \begin{equation}
+		            \varphi(\omega)=-\arctan{T\omega}
+	            \end{equation}
+
+	            使用近似画法进行绘制（蓝线），对比精确结果（红线），在$\omega=\frac{1}{T}$处误差为-3dB。
+
+	            \begin{center}
+		            \begin{tikzpicture}
+			            \begin{axis}[width = 6cm, height = 5cm,
+					            axis lines = left,
+					            xmode = log,
+					            xlabel = \(\omega\), ylabel = {\(L(\omega)\quad[dB]\)},
+					            log ticks with fixed point,
+					            xmin = 0.1, xmax = 10000,
+					            ymin = -40, ymax = 40,
+					            xtick = {0.1,1,10,100,1000,10000},
+					            ytick distance = 20,
+					            legend pos = north west,
+					            ymajorgrids = true,
+					            xmajorgrids = true,
+					            grid style = dashed,
+				            ]
+				            \addplot [
+					            mark=\empty,
+				            ] coordinates {
+						            (0.1,0)(10,0)(1000,-40)
+					            };
+				            \addplot [
+					            domain=0.1:10000,
+					            samples=200,
+					            color=red,
+				            ] { - 20 * log10( sqrt( 1 + ( x / 10 )^2 ) ) };
+				            % \addplot [] {20*log(10,x)};
+				            \addplot+ [color=blue] coordinates {
+						            (10,0)
+					            };
+				            \node [above] at (axis cs: 10, 0) {$\omega=\frac{1}{T}$};
+				            \addplot+ [color=blue] coordinates {
+						            (100,-20)
+					            };
+				            \node [above] at (axis cs: 100, -20) {$\omega=\frac{10}{T}$};
+			            \end{axis}
+		            \end{tikzpicture}
+		            \begin{tikzpicture}
+			            \begin{axis}[width=6cm,height=5cm,
+					            axis lines = left,
+					            xmode = log,
+					            xlabel = \(\omega\), ylabel = {\(\varphi(\omega)\quad[^\circ]\)},
+					            log ticks with fixed point,
+					            xmin = 0.1, xmax = 10000,
+					            ymin = -180, ymax = 90,
+					            xtick = {0.1,1,10,100,1000,10000},
+					            ytick distance = 45,
+					            legend pos = north west,
+					            ymajorgrids = true,
+					            xmajorgrids = true,
+					            grid style = dashed,
+				            ]
+				            \addplot [
+					            domain=0.1:10000,
+					            samples=200,
+					            color=blue,
+				            ] { atan( x / 10 ) - 180 };
+				            \addplot+ [color=blue] coordinates {
+						            (10,-135)
+					            };
+				            \node [above] at (axis cs: 10, -135) {$\omega=\frac{1}{T}$};
+			            \end{axis}
+		            \end{tikzpicture}
+	            \end{center}
+	      }
+\end{itemize}
+
+对比惯性系统，在相同幅值时一阶不稳定环节的相角绝对值更大，故惯性环节又常称为最小相位系统。
+
+推广之，传递函数中有右零点或极点的系统称为非最小相位系统，传递函数中没有右零点或极点的系统称为最小相位系统。
+
+对于最小相位系统，其开环传递函数预期对数幅频特性曲线一一对应，而非最小相位系统则不是。
+
+\subsection{时滞环节}、
+
+该环节在时域具有如下表现
+
+\begin{equation}
+	c(t)=r(t-r)
+\end{equation}
+
+由拉氏变换得
+
+\begin{equation}
+	C(s)=R(s)e^{-\tau s}
+\end{equation}
+
+\begin{equation}
+	G(s)=e^{-\tau s}
+\end{equation}
+
+\begin{itemize}
+	\item{ 其 Nyquist 图像是一个圆
+	            \begin{equation}
+		            G(j\omega)=e^{-j\tau\omega}
+	            \end{equation}
+
+	            \begin{center}
+		            \begin{tikzpicture}
+			            \begin{axis}[width=6.25cm,height=5cm,
+					            axis lines = center,
+					            xlabel = \(\), ylabel = \(i\),
+					            xmin = -1, xmax = 1.5,
+					            ymin = -1, ymax = 1,
+					            xticklabel=\empty, yticklabel=\empty,
+				            ]
+				            \addplot [
+				            domain = 0.5:-0.5,
+				            color = red,
+				            samples = 200,
+				            -{>[scale = 2.0]},
+				            ] { -sqrt(0.25-((0.5-x)-0.5)^2) };
+										\addplot [
+				            domain = -0.5:0.5,
+				            color = red,
+				            samples = 200,
+				            -{>[scale = 2.0]},
+				            ] { sqrt(0.25-((0.5-x)-0.5)^2) };
+				            \node [above] at (axis cs: -0.5, 0) {$-1$};
+				            \node [below right] at (axis cs: 0.5, 0) {$\omega=0$};
+				            \node [above right] at (axis cs: 0.5, 0) {$\omega=\infty$};
+			            \end{axis}
+		            \end{tikzpicture}
+	            \end{center}
+	      }
+
+	\item{ 其 Bode 图求解得，
+
+	            \begin{equation}
+		            L(\omega)=20\log{1}=0
+	            \end{equation}
+	            \begin{equation}
+		            \varphi(\omega)=-\tau\omega
+	            \end{equation}
+
+
+	            \begin{center}
+		            \begin{tikzpicture}
+			            \begin{axis}[width = 6cm, height = 5cm,
+					            axis lines = left,
+					            xmode = log,
+					            xlabel = \(\omega\), ylabel = {\(L(\omega)\quad[dB]\)},
+					            log ticks with fixed point,
+					            xmin = 0.1, xmax = 10000,
+					            ymin = -40, ymax = 40,
+					            xtick = {0.1,1,10,100,1000,10000},
+					            ytick distance = 20,
+					            legend pos = north west,
+					            ymajorgrids = true,
+					            xmajorgrids = true,
+					            grid style = dashed,
+				            ]
+				            \addplot [
+					            domain=0.1:10000,
+					            samples=200,
+					            color=red,
+				            ] { 0 };
+			            \end{axis}
+		            \end{tikzpicture}
+		            \begin{tikzpicture}
+			            \begin{axis}[width=6cm,height=5cm,
+					            axis lines = left,
+					            xmode = log,
+					            xlabel = \(\omega\), ylabel = {\(\varphi(\omega)\quad[^\circ]\)},
+					            log ticks with fixed point,
+					            xmin = 0.1, xmax = 10000,
+					            ymin = -180, ymax = 90,
+					            xtick = {0.1,1,10,100,1000,10000},
+					            ytick distance = 45,
+					            legend pos = north west,
+					            ymajorgrids = true,
+					            xmajorgrids = true,
+					            grid style = dashed,
+				            ]
+				            \addplot [
+					            domain=0.1:100,
+					            samples=200,
+					            color=blue,
+				            ] { -10*x };
+			            \end{axis}
+		            \end{tikzpicture}
+	            \end{center}
+	      }
+\end{itemize}
+
+注意其相频特性随频率增加趋向无穷，这对系统的稳定性是十分不利的。
+
+\section{用频率法分析控制系统的稳定性}
+
+\subsection{开环频率特性与闭环特征根的关系}
+
+Hello
 
 
 \end{document}
